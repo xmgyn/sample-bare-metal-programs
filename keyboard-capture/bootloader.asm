@@ -4,7 +4,7 @@
 start:
     ; Set video mode
     mov ah, 0x00
-    mov al, 0x03   ; 80x25 text mode
+    mov al, 0x03   
     int 0x10
 
     ; Initialize keyboard
@@ -12,19 +12,15 @@ start:
     mov ds, ax
 
 main_loop:
-    ; Wait for a key press
     call get_key
-    ; Convert scan code to ASCII
     call scancode_to_ascii
-    ; Display the key if valid
-    cmp al, 0      ; Check if al is 0 (invalid)
-    je main_loop   ; If so, loop again
+    cmp al, 0      
+    je main_loop   
     mov ah, 0x0E
     int 0x10
     jmp main_loop
 
 get_key:
-    ; Wait for key press
     in al, 0x64
     test al, 1
     jz get_key
@@ -32,13 +28,10 @@ get_key:
     ret
 
 scancode_to_ascii:
-    ; Check if the high bit is set (indicates a key release)
     test al, 0x80
-    jnz ignore_key  ; If it is set, ignore this key
+    jnz ignore_key  
 
-    ; Handle key press
-    and al, 0x7F    ; Mask off the high bit
-    ; Map scancodes to ASCII
+    and al, 0x7F    
     cmp al, 0x1E    ; 'A'
     je set_a
     cmp al, 0x30    ; 'B'
@@ -111,11 +104,11 @@ scancode_to_ascii:
     je set_8
     cmp al, 0x0A    ; '9'
     je set_9
-    xor al, al      ; No valid key pressed, return 0
+    xor al, al      
     ret
 
 ignore_key:
-    xor al, al      ; Set al to 0 to indicate invalid key
+    xor al, al     
     ret
 
 set_a: mov al, 'A'  ; 'A'
@@ -194,5 +187,5 @@ set_9: mov al, '9'  ; '9'
 hang:
     jmp hang
 
-times 510-($-$$) db 0  ; Fill the rest of the 512-byte boot sector with zeros
-dw 0xAA55              ; Boot signature
+times 510-($-$$) db 0  
+dw 0xAA55              
